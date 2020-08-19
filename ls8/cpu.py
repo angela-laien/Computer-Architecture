@@ -14,12 +14,16 @@ class CPU:
 
         self.pc = 0
 
+        self.address = 0
+
+        self.running = True
+
     def load(self):
         """Load a program into memory."""
 
-        if len(sys.argv) < 2:
-            print("try another file")
-            sys.exit()
+        # if len(sys.argv) < 2:
+        #     print("try another file")
+        #     sys.exit()
 
         try:
             address = 0
@@ -31,7 +35,8 @@ class CPU:
                     if n == '':
                         continue
 
-                    self.ram[address] = int(n, 2)
+                    value = int(n, 2)
+                    self.ram[address] = value
                     address += 1
         except:
             print("can not find it!")
@@ -104,15 +109,19 @@ class CPU:
         # Print numeric value stored in the given register
         print(self.reg[operand_a])
 
+    def mul(self, operand_a, operand_b):
+        product = self.reg[operand_a] * self.reg[operand_b]
+        self.reg[operand_a] = product
+
     def run(self):
         """Run the CPU."""
        
         # Halt the CPU (and exit the emulator)
-        self.load()
-
+        
         HLT = 0b00000001 
         LDI = 0b10000010 
         PRN = 0b01000111 
+        MUL = 0b10100010
 
         running = True
 
@@ -134,6 +143,10 @@ class CPU:
             elif IR == PRN:
                 self.prn(operand_a)
                 self.pc += 2
+
+            elif IR == MUL:
+                self.mul(operand_a, operand_b)
+                self.pc += 3
 
             else:
                 running = False
