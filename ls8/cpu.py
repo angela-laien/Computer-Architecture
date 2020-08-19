@@ -18,6 +18,9 @@ class CPU:
 
         self.running = True
 
+        self.sp = 7
+        # self.reg[7] = 0xF0
+
     def load(self):
         """Load a program into memory."""
 
@@ -113,15 +116,25 @@ class CPU:
         product = self.reg[operand_a] * self.reg[operand_b]
         self.reg[operand_a] = product
 
+    def push(self, operand_a):
+        self.sp -= 1
+        self.ram[self.sp] = self.reg[operand_a]
+
+    def pop(self, operand_a):
+        self.reg[operand_a] = self.ram[self.sp]
+        self.sp += 1
+
     def run(self):
         """Run the CPU."""
        
         # Halt the CPU (and exit the emulator)
-        
-        HLT = 0b00000001 
+        HLT = 0b00000001
+
         LDI = 0b10000010 
         PRN = 0b01000111 
         MUL = 0b10100010
+        PUSH = 0b01000101
+        POP = 0b01000110
 
         running = True
 
@@ -147,6 +160,14 @@ class CPU:
             elif IR == MUL:
                 self.mul(operand_a, operand_b)
                 self.pc += 3
+
+            elif IR == PUSH:
+                self.push(operand_a)
+                self.pc += 2
+
+            elif IR == POP:
+                self.pop(operand_a)
+                self.pc += 2
 
             else:
                 running = False
