@@ -124,6 +124,15 @@ class CPU:
         self.reg[operand_a] = self.ram[self.sp]
         self.sp += 1
 
+    def call(self, operand_a):
+        self.sp -= 1
+        self.ram[self.sp] = self.pc + 2
+        self.pc = self.reg[operand_a]
+
+    def ret(self):
+        self.pc = self.ram_read(self.sp)
+        self.sp += 1
+
     def run(self):
         """Run the CPU."""
        
@@ -135,6 +144,8 @@ class CPU:
         MUL = 0b10100010
         PUSH = 0b01000101
         POP = 0b01000110
+        CALL = 0b01010000
+        RET = 0b00010001
 
         running = True
 
@@ -168,6 +179,14 @@ class CPU:
             elif IR == POP:
                 self.pop(operand_a)
                 self.pc += 2
+
+            elif IR == CALL:
+                self.call(operand_a)
+                self.pc += 0
+
+            elif IR == RET:
+                self.ret()
+                self.pc += 0
 
             else:
                 running = False
