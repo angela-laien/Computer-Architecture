@@ -112,6 +112,9 @@ class CPU:
         # Print numeric value stored in the given register
         print(self.reg[operand_a])
 
+    def add(self, operand_a, operand_b):
+        self.reg[operand_a] += self.reg[operand_b]
+
     def mul(self, operand_a, operand_b):
         product = self.reg[operand_a] * self.reg[operand_b]
         self.reg[operand_a] = product
@@ -125,8 +128,9 @@ class CPU:
         self.sp += 1
 
     def call(self, operand_a):
+        return_address = self.pc + 2
         self.sp -= 1
-        self.ram[self.sp] = self.pc + 2
+        self.ram[self.sp] = return_address
         self.pc = self.reg[operand_a]
 
     def ret(self):
@@ -142,6 +146,7 @@ class CPU:
         LDI = 0b10000010 
         PRN = 0b01000111 
         MUL = 0b10100010
+        ADD = 0b10100000
         PUSH = 0b01000101
         POP = 0b01000110
         CALL = 0b01010000
@@ -167,6 +172,10 @@ class CPU:
             elif IR == PRN:
                 self.prn(operand_a)
                 self.pc += 2
+
+            elif IR == ADD:
+                self.add(operand_a, operand_b)
+                self.pc += 3
 
             elif IR == MUL:
                 self.mul(operand_a, operand_b)
